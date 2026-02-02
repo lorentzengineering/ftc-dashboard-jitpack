@@ -2,21 +2,36 @@ jdk:
   - openjdk17
 
 before_install:
-  # Install Node.js 18 + npm using NodeSource (doesn't require nvm/corepack)
-  - sudo apt-get update -y
-  - sudo apt-get install -y curl ca-certificates gnupg
-  - curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-  - sudo apt-get install -y nodejs
+  - bash -lc '
+      set -euo pipefail
 
-  # Verify tools
-  - node -v
-  - npm -v
+      export NVM_DIR="$HOME/.nvm"
+      mkdir -p "$NVM_DIR"
 
-  # Install yarn classic (1.x) globally (corepack may not exist on older node installs)
-  - sudo npm i -g yarn@1.22.19
-  - yarn -v
+      # Install nvm (no sudo needed)
+      curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+      # Load nvm into this shell
+      . "$NVM_DIR/nvm.sh"
+
+      # Install and use the exact Node version Dashboard expects
+      nvm install 18.12.1
+      nvm use 18.12.1
+
+      node -v
+      npm -v
+
+      # Yarn classic
+      npm i -g yarn@1.22.19
+      yarn -v
+    '
 
 install:
-  # Use whatever you actually need JitPack to produce.
-  # "install" is what JitPack uses to build & publish.
-  - ./gradlew build --stacktrace
+  - bash -lc '
+      set -euo pipefail
+      export NVM_DIR="$HOME/.nvm"
+      . "$NVM_DIR/nvm.sh"
+      nvm use 18.12.1
+
+      ./gradlew build --stacktrace
+    '
