@@ -2,10 +2,21 @@ jdk:
   - openjdk17
 
 before_install:
-  - nvm install 18
-  - nvm use 18
-  - corepack enable
-  - corepack prepare yarn@1.22.19 --activate
+  # Install Node.js 18 + npm using NodeSource (doesn't require nvm/corepack)
+  - sudo apt-get update -y
+  - sudo apt-get install -y curl ca-certificates gnupg
+  - curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+  - sudo apt-get install -y nodejs
+
+  # Verify tools
+  - node -v
+  - npm -v
+
+  # Install yarn classic (1.x) globally (corepack may not exist on older node installs)
+  - sudo npm i -g yarn@1.22.19
+  - yarn -v
 
 install:
-  - ./gradlew publishToMavenLocal -x :FtcDashboard:yarnSetup --stacktrace
+  # Use whatever you actually need JitPack to produce.
+  # "install" is what JitPack uses to build & publish.
+  - ./gradlew build --stacktrace
