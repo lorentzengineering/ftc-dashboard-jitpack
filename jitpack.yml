@@ -1,0 +1,11 @@
+jdk:
+  - openjdk17
+
+before_install:
+  - nvm install 18
+  - nvm use 18
+  - corepack enable
+  - corepack prepare yarn@1.22.19 --activate
+
+install:
+  - ./gradlew publishToMavenLocal -x :FtcDashboard:yarnSetup --stacktrace
